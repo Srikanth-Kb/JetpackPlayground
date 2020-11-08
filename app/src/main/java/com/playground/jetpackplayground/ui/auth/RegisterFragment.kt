@@ -7,9 +7,12 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.Observer
 import com.playground.jetpackplayground.R
-import com.playground.jetpackplayground.ui.auth.state.AuthStateEvent.RegisterAttemptEvent
+import com.playground.jetpackplayground.ui.auth.state.AuthStateEvent
+import com.playground.jetpackplayground.ui.auth.state.AuthStateEvent.*
 import com.playground.jetpackplayground.ui.auth.state.RegistrationFields
+
 import kotlinx.android.synthetic.main.fragment_register.*
+
 
 class RegisterFragment : BaseAuthFragment() {
 
@@ -23,28 +26,26 @@ class RegisterFragment : BaseAuthFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        Log.d(TAG, "onViewCreated: RegisterFragment : ${viewModel.hashCode()}")
+        Log.d(TAG, "RegisterFragment: ${viewModel}")
 
-        register_button.setOnClickListener{
+        register_button.setOnClickListener {
             register()
         }
-
-        subsribeObservers()
-
+        subscribeObservers()
     }
 
-    fun subsribeObservers() {
-        viewModel.viewState.observe(viewLifecycleOwner, Observer {
-            it.registration_fields?.let {registrationFields ->
-                registrationFields.registration_email?.let {input_email.setText(it)}
-                registrationFields.registration_username?.let {input_username.setText(it)}
-                registrationFields.registration_password?.let {input_password.setText(it)}
-                registrationFields.registration_confirm_password?.let {input_password_confirm.setText(it)}
+    fun subscribeObservers(){
+        viewModel.viewState.observe(viewLifecycleOwner, Observer{viewState ->
+            viewState.registrationFields?.let {
+                it.registration_email?.let{input_email.setText(it)}
+                it.registration_username?.let{input_username.setText(it)}
+                it.registration_password?.let{input_password.setText(it)}
+                it.registration_confirm_password?.let{input_password_confirm.setText(it)}
             }
         })
     }
 
-    fun register() {
+    fun register(){
         viewModel.setStateEvent(
             RegisterAttemptEvent(
                 input_email.text.toString(),
@@ -57,7 +58,6 @@ class RegisterFragment : BaseAuthFragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-
         viewModel.setRegistrationFields(
             RegistrationFields(
                 input_email.text.toString(),
@@ -66,6 +66,5 @@ class RegisterFragment : BaseAuthFragment() {
                 input_password_confirm.text.toString()
             )
         )
-
     }
 }

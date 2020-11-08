@@ -5,7 +5,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.playground.jetpackplayground.R
-import com.playground.jetpackplayground.ui.main.blog.BaseBlogFragment
 
 class UpdateBlogFragment : BaseBlogFragment(){
 

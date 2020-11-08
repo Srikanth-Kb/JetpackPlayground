@@ -1,8 +1,10 @@
 package com.playground.jetpackplayground.ui
 
-interface DataStateChangeListener {
+interface DataStateChangeListener{
 
     fun onDataStateChange(dataState: DataState<*>?)
 
-    fun expandAppbar()
+    fun expandAppBar()
+
+    fun hideSoftKeyBoard()
 }

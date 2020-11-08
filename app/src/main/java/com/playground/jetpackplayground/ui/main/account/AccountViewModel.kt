@@ -4,12 +4,13 @@ import androidx.lifecycle.LiveData
 import com.playground.jetpackplayground.models.AccountProperties
 import com.playground.jetpackplayground.repository.main.AccountRepository
 import com.playground.jetpackplayground.session.SessionManager
+import com.playground.jetpackplayground.ui.BaseViewModel
 import com.playground.jetpackplayground.ui.DataState
+import com.playground.jetpackplayground.ui.auth.state.AuthStateEvent
 import com.playground.jetpackplayground.ui.main.account.state.AccountStateEvent
 import com.playground.jetpackplayground.ui.main.account.state.AccountStateEvent.*
 import com.playground.jetpackplayground.ui.main.account.state.AccountViewState
 import com.playground.jetpackplayground.util.AbsentLiveData
-import com.playground.jetpackplayground.util.BaseViewModel
 import javax.inject.Inject
 
 class AccountViewModel
@@ -17,40 +18,93 @@ class AccountViewModel
 constructor(
     val sessionManager: SessionManager,
     val accountRepository: AccountRepository
-): BaseViewModel<AccountStateEvent, AccountViewState> ()
+)
+    : BaseViewModel<AccountStateEvent, AccountViewState>()
 {
     override fun handleStateEvent(stateEvent: AccountStateEvent): LiveData<DataState<AccountViewState>> {
-        when(stateEvent) {
+        when(stateEvent){
+
             is GetAccountPropertiesEvent -> {
                 return sessionManager.cachedToken.value?.let { authToken ->
                     accountRepository.getAccountProperties(authToken)
                 }?: AbsentLiveData.create()
             }
-            is UpdateAccountPropertiesEvent -> {
-                return AbsentLiveData.create()
+
+            is UpdateAccountPropertiesEvent ->{
+                return sessionManager.cachedToken.value?.let { authToken ->
+                    authToken.account_pk?.let { pk ->
+                        val newAccountProperties = AccountProperties(
+                            pk,
+                            stateEvent.email,
+                            stateEvent.username
+                        )
+                        accountRepository.saveAccountProperties(
+                            authToken,
+                            newAccountProperties
+                        )
+                    }
+                }?: AbsentLiveData.create()
             }
-            is ChangePasswordEvent -> {
-                return AbsentLiveData.create()
+
+            is ChangePasswordEvent ->{
+                return sessionManager.cachedToken.value?.let {
+                    accountRepository.updatePassword(
+                        it,
+                        stateEvent.currentPassword,
+                        stateEvent.newPassword,
+                        stateEvent.confirmNewPassword
+                    )
+                }?:AbsentLiveData.create()
             }
-            is None -> {
+
+            is None ->{
                 return AbsentLiveData.create()
             }
         }
+    }
+
+    fun setAccountPropertiesData(accountProperties: AccountProperties){
+        val update = getCurrentViewStateOrNew()
+        if(update.accountProperties == accountProperties){
+            return
+        }
+        update.accountProperties = accountProperties
+        _viewState.value = update
     }
 
     override fun initNewViewState(): AccountViewState {
         return AccountViewState()
     }
 
-    fun setAccountPropertiesData(accountProperties: AccountProperties) {
-        val update = getCurrentViewStateOrNew()
-        if(update.accountProperties == accountProperties)
-            return
-        update.accountProperties = accountProperties
-        _viewState.value = update
-    }
-
-    fun logout() {
+    fun logout(){
         sessionManager.logOut()
     }
+
+    fun cancelActiveJobs(){
+        handlePendingEvent()
+        accountRepository.cancelActiveJobs()
+    }
+
+    fun handlePendingEvent() {
+        setStateEvent(AccountStateEvent.None())
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        cancelActiveJobs()
+    }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+

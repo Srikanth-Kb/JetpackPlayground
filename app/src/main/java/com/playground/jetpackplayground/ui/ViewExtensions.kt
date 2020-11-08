@@ -6,13 +6,16 @@ import androidx.annotation.StringRes
 import com.afollestad.materialdialogs.MaterialDialog
 import com.playground.jetpackplayground.R
 
-fun Context.displayToast(@StringRes message: Int) {
-    Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+
+fun Context.displayToast(@StringRes message:Int){
+    Toast.makeText(this,message,Toast.LENGTH_LONG).show()
 }
-fun Context.displayToast(message: String) {
-    Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+
+fun Context.displayToast(message:String){
+    Toast.makeText(this,message,Toast.LENGTH_LONG).show()
 }
-fun Context.displaySuccessDialog(message: String) {
+
+fun Context.displaySuccessDialog(message: String?){
     MaterialDialog(this)
         .show{
             title(R.string.text_success)
@@ -20,11 +23,24 @@ fun Context.displaySuccessDialog(message: String) {
             positiveButton(R.string.text_ok)
         }
 }
-fun Context.displayErrorDialog(message: String) {
+
+fun Context.displayErrorDialog(errorMessage: String?){
     MaterialDialog(this)
         .show{
             title(R.string.text_error)
-            message(text = message)
+            message(text = errorMessage)
             positiveButton(R.string.text_ok)
         }
 }
+
+
+
+
+
+
+
+
+
+
+
+

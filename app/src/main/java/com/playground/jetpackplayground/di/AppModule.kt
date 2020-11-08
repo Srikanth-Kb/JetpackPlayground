@@ -1,7 +1,6 @@
 package com.playground.jetpackplayground.di
 
 import android.app.Application
-import android.content.ContentProvider
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.room.Room

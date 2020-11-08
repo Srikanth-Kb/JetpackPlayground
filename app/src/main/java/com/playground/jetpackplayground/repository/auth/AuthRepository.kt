@@ -11,6 +11,7 @@ import com.playground.jetpackplayground.models.AccountProperties
 import com.playground.jetpackplayground.models.AuthToken
 import com.playground.jetpackplayground.persistence.AccountPropertiesDao
 import com.playground.jetpackplayground.persistence.AuthTokenDao
+import com.playground.jetpackplayground.repository.JobManager
 import com.playground.jetpackplayground.repository.NetworkBoundResource
 import com.playground.jetpackplayground.session.SessionManager
 import com.playground.jetpackplayground.ui.DataState
@@ -39,9 +40,8 @@ constructor(
     val sessionManager: SessionManager,
     val sharedPreferences: SharedPreferences,
     val sharedPrefsEditor: SharedPreferences.Editor
-){
+): JobManager("AuthRepository"){
     private val TAG : String = "AppDebug"
-    private var repositoryJob: Job ?= null
 
     fun attemptLogin(email: String, password: String) : LiveData<DataState<AuthViewState>> {
         val loginFieldErrors = LoginFields(email, password).isValidForLogin()
@@ -50,6 +50,7 @@ constructor(
 
         return object : NetworkBoundResource<LoginResponse, Any, AuthViewState> (
             sessionManager.isConnectedToTheInternet(),
+            true,
             true,
             false
         ) {
@@ -103,8 +104,7 @@ constructor(
             }
 
             override fun setJob(job: Job) {
-                repositoryJob?.cancel()
-                repositoryJob = job
+                addJob("attemptLogin", job)
             }
 
             // not used in this case
@@ -134,6 +134,7 @@ constructor(
         }
         return object : NetworkBoundResource<RegistrationResponse, Any, AuthViewState> (
             sessionManager.isConnectedToTheInternet(),
+            true,
             true,
             false
         ) {
@@ -185,8 +186,7 @@ constructor(
             }
 
             override fun setJob(job: Job) {
-                repositoryJob?.cancel()
-                repositoryJob = job
+                addJob("attemptRegistration", job)
             }
 
             override suspend fun createCacheRequestAndReturn() {
@@ -214,6 +214,7 @@ constructor(
 
         return object : NetworkBoundResource<Void, Any, AuthViewState> (
             sessionManager.isConnectedToTheInternet(),
+            false,
             false,
             false
         ) {
@@ -259,8 +260,7 @@ constructor(
             }
 
             override fun setJob(job: Job) {
-                repositoryJob?.cancel()
-                repositoryJob = job
+                addJob("checkPreviousAuthUser", job)
             }
 
             override fun loadFromCache(): LiveData<AuthViewState> {
@@ -303,10 +303,5 @@ constructor(
                 )
             }
         }
-    }
-
-    fun cancelActiveJobs() {
-        Log.d(TAG, "cancelActiveJobs: Authrepository, cancelling on-going jobs...")
-        repositoryJob?.cancel()
     }
 }

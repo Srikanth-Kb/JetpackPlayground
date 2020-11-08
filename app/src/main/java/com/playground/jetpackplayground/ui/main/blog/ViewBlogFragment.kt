@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.*
 import androidx.navigation.fragment.findNavController
 import com.playground.jetpackplayground.R
-import com.playground.jetpackplayground.ui.main.blog.BaseBlogFragment
 
 class ViewBlogFragment : BaseBlogFragment(){
 

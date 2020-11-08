@@ -8,17 +8,20 @@ import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.navigation.NavController
-import com.google.android.material.appbar.AppBarLayout
+import com.playground.jetpackplayground.R
+import com.playground.jetpackplayground.ui.BaseActivity
+import com.playground.jetpackplayground.ui.auth.AuthActivity
 import com.playground.jetpackplayground.ui.main.account.ChangePasswordFragment
 import com.playground.jetpackplayground.ui.main.account.UpdateAccountFragment
 import com.playground.jetpackplayground.ui.main.blog.UpdateBlogFragment
 import com.playground.jetpackplayground.ui.main.blog.ViewBlogFragment
-import com.google.android.material.bottomnavigation.BottomNavigationView
-import com.playground.jetpackplayground.R
-import com.playground.jetpackplayground.ui.BaseActivity
-import com.playground.jetpackplayground.ui.auth.AuthActivity
 import com.playground.jetpackplayground.util.BottomNavController
 import com.playground.jetpackplayground.util.setUpNavigation
+import com.google.android.material.appbar.AppBarLayout
+import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.playground.jetpackplayground.ui.main.account.BaseAccountFragment
+import com.playground.jetpackplayground.ui.main.blog.BaseBlogFragment
+import com.playground.jetpackplayground.ui.main.create_blog.BaseCreateBlogFragment
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.activity_main.progress_bar
 
@@ -55,7 +58,25 @@ class MainActivity : BaseActivity(),
     }
 
     override fun onGraphChange() {
-        expandAppbar()
+        expandAppBar()
+        cancelActiveJobs()
+    }
+
+    private fun cancelActiveJobs() {
+        val fragments = bottomNavController.fragmentManager
+            .findFragmentById(bottomNavController.containerId)
+            ?.childFragmentManager
+            ?.fragments
+        if (fragments != null) {
+            for(fragment in fragments) {
+                when(fragment) {
+                    is BaseAccountFragment -> fragment.cancelActiveJobs()
+                    is BaseBlogFragment -> fragment.cancelActiveJobs()
+                    is BaseCreateBlogFragment -> fragment.cancelActiveJobs()
+                }
+            }
+        }
+        displayProgressBar(false)
     }
 
     override fun onReselectNavItem(
@@ -94,10 +115,6 @@ class MainActivity : BaseActivity(),
         return super.onOptionsItemSelected(item)
     }
 
-    override fun expandAppbar() {
-        findViewById<AppBarLayout>(R.id.app_bar).setExpanded(true)
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -120,6 +137,10 @@ class MainActivity : BaseActivity(),
                 finish()
             }
         })
+    }
+
+    override fun expandAppBar() {
+        findViewById<AppBarLayout>(R.id.app_bar).setExpanded(true)
     }
 
     private fun setupActionBar(){
