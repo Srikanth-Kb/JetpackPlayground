@@ -6,10 +6,12 @@ import com.playground.jetpackplayground.repository.main.AccountRepository
 import com.playground.jetpackplayground.session.SessionManager
 import com.playground.jetpackplayground.ui.BaseViewModel
 import com.playground.jetpackplayground.ui.DataState
+import com.playground.jetpackplayground.ui.Loading
 import com.playground.jetpackplayground.ui.auth.state.AuthStateEvent
 import com.playground.jetpackplayground.ui.main.account.state.AccountStateEvent
 import com.playground.jetpackplayground.ui.main.account.state.AccountStateEvent.*
 import com.playground.jetpackplayground.ui.main.account.state.AccountViewState
+import com.playground.jetpackplayground.ui.main.blog.state.BlogViewState
 import com.playground.jetpackplayground.util.AbsentLiveData
 import javax.inject.Inject
 
@@ -58,7 +60,16 @@ constructor(
             }
 
             is None ->{
-                return AbsentLiveData.create()
+                return object : LiveData<DataState<AccountViewState>>() {
+                    override fun onActive() {
+                        super.onActive()
+                        value = DataState(
+                            null,
+                            Loading(false),
+                            null
+                        )
+                    }
+                }
             }
         }
     }

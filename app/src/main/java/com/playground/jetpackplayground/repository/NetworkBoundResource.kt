@@ -25,7 +25,7 @@ abstract class NetworkBoundResource<ResponseObject, CacheObject, ViewStateType>
     isNetworkAvailable: Boolean, // is there a network connection?
     isNetworkRequest: Boolean,
     shouldCancelIfNoInternet: Boolean, // should this job be cancelled, if there is no network ?
-    shouldLoadFromCache: Boolean    // should we check dataabase, or check the internet
+    shouldLoadFromCache: Boolean    // should we check database, or check the internet
 ) {
     private val TAG: String = "AppDebug"
 

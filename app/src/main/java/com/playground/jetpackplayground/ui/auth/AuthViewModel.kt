@@ -5,6 +5,7 @@ import com.playground.jetpackplayground.models.AuthToken
 import com.playground.jetpackplayground.repository.auth.AuthRepository
 import com.playground.jetpackplayground.ui.BaseViewModel
 import com.playground.jetpackplayground.ui.DataState
+import com.playground.jetpackplayground.ui.Loading
 import com.playground.jetpackplayground.ui.auth.state.AuthStateEvent
 import com.playground.jetpackplayground.ui.auth.state.AuthStateEvent.*
 import com.playground.jetpackplayground.ui.auth.state.AuthViewState

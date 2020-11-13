@@ -33,6 +33,7 @@ constructor(
 ): JobManager("AccountRepository") {
 
     private val TAG = "AppDebug"
+    private var repositoryJob: Job? = null
 
     fun getAccountProperties(authToken: AuthToken) : LiveData<DataState<AccountViewState>> {
         return object : NetworkBoundResource<AccountProperties, AccountProperties, AccountViewState>(

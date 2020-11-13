@@ -2,6 +2,7 @@ package com.playground.jetpackplayground.api.main
 
 import androidx.lifecycle.LiveData
 import com.playground.jetpackplayground.api.GenericResponse
+import com.playground.jetpackplayground.api.main.responses.BlogListSearchResponse
 import com.playground.jetpackplayground.models.AccountProperties
 import com.playground.jetpackplayground.util.GenericApiResponse
 import retrofit2.http.*
@@ -29,5 +30,12 @@ interface OpenApiMainService {
         @Field("new_password") newPassword: String,
         @Field("confirm_new_password") confirmNewPassword: String
     ): LiveData<GenericApiResponse<GenericResponse>>
+
+    @GET("blog/list")
+    fun searchListBlogPosts(
+        @Header("Authorization") authorization: String,
+        @Query("search") query: String,
+        @Query("page") page: Int
+    ): LiveData<GenericApiResponse<BlogListSearchResponse>>
 
 }
